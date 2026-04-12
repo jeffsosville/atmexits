@@ -1,191 +1,105 @@
-// pages/index.tsx
-// CHANGES FROM PREVIOUS VERSION:
-// 1. Default category → 'commercial_cleaning'
-// 2. Hero copy is dynamic per selected category
-// 3. Stats bar: Active Listings + Median DOM (from DealLedger) + % over 1 year
-// 4. Meta tags updated for commercial cleaning
-// 5. Browse CTA links to correct category
+import type { NextPage } from 'next'
+import Head from 'next/head'
+import Link from 'next/link'
 
-import { useState, useEffect, useCallback } from 'react';
-import Head from "next/head";
-import Link from "next/link";
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { CategoryFilter, CategorySlug } from '../components/CategoryFilter';
-
-const CATEGORY_LABELS: Record<string, string> = {
-  commercial_cleaning:  'Commercial Cleaning',
-  residential_cleaning: 'Residential Cleaning',
-  laundromat:           'Laundromat',
-  landscaping:          'Landscaping',
-  pool_service:         'Pool Service',
-  pressure_washing:     'Pressure Washing',
-  junk_removal:         'Junk Removal',
-  dry_cleaner:          'Dry Cleaner',
-  pest_control:         'Pest Control',
-};
-
-interface Stats {
-  totalVerified: number;
-  medianDom:    number | null;
-  pctOver365:   number | null;
-}
-
-export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState<CategorySlug>('commercial_cleaning');
-  const [stats, setStats]                       = useState<Stats>({ totalVerified: 0, medianDom: null, pctOver365: null });
-  const [categoryCounts, setCategoryCounts]     = useState<Record<CategorySlug, number>>({} as Record<CategorySlug, number>);
-  const [statsLoading, setStatsLoading]         = useState(false);
-
-  const fetchStats = useCallback(async (category: CategorySlug) => {
-    setStatsLoading(true);
-    try {
-      const res  = await fetch(`/api/stats?category=${category}`);
-      const data = await res.json();
-      setStats({
-        totalVerified: data.totalVerified ?? 0,
-        medianDom:     data.medianDom     ?? null,
-        pctOver365:    data.pctOver365    ?? null,
-      });
-      setCategoryCounts(data.categoryCounts || {});
-    } catch (e) {
-      console.error('Stats fetch error', e);
-    } finally {
-      setStatsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { fetchStats(selectedCategory); }, [selectedCategory, fetchStats]);
-
-  const label = CATEGORY_LABELS[selectedCategory] ?? 'Cleaning Business';
-
+const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>{label} Businesses For Sale | CleaningExits</title>
-        <meta name="description" content={
-          `Find verified ${label.toLowerCase()} businesses for sale. ` +
-          `${stats.totalVerified} active listings updated daily. ` +
-          `Filter by state, price, and days on market.`
-        } />
-        <meta property="og:title"       content={`${label} Businesses For Sale | CleaningExits`} />
-        <meta property="og:description" content={`The only marketplace that shows days on market and buyer view counts for ${label.toLowerCase()} businesses.`} />
+        <title>ATM Exits — The Trusted Marketplace for ATM Routes</title>
+        <meta name="description" content="Buy and sell verified ATM routes. Built by ATM Brokerage — 200+ closed transactions, $100M+ in deal volume since 2013." />
       </Head>
 
-      <div className="min-h-screen bg-white">
-        <Header />
+      <div style={{ fontFamily: 'system-ui, sans-serif', color: '#1a1a1a' }}>
 
-        <main className="max-w-5xl mx-auto px-4 py-12">
+        <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px', borderBottom: '1px solid #e5e7eb' }}>
+          <div style={{ fontWeight: 700, fontSize: '20px', letterSpacing: '-0.5px' }}>ATM Exits</div>
+          <div style={{ display: 'flex', gap: '32px', fontSize: '15px', alignItems: 'center' }}>
+            <Link href="/listings" style={{ color: '#374151', textDecoration: 'none' }}>Browse routes</Link>
+            <Link href="/sell" style={{ color: '#374151', textDecoration: 'none' }}>List your route</Link>
+            <Link href="/contact" style={{ color: '#374151', textDecoration: 'none' }}>Contact</Link>
+            <Link href="/sell" style={{ background: '#2d6a4f', color: '#fff', padding: '8px 20px', borderRadius: '6px', textDecoration: 'none', fontWeight: 500 }}>
+              Get a valuation →
+            </Link>
+          </div>
+        </nav>
 
-          {/* Hero */}
-          <section className="text-center mb-10">
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-3">
-              {label} Businesses For Sale
-            </h1>
-            <p className="text-gray-500 mb-1">by CleaningExits</p>
-            <p className="text-xl font-semibold text-gray-800 mb-2">
-              {statsLoading ? '—' : stats.totalVerified.toLocaleString()} Verified Listings
-            </p>
-            <p className="text-gray-500">
-              Every {label.toLowerCase()} business for sale in the US. Updated daily.
-            </p>
-          </section>
+        <section style={{ maxWidth: '760px', margin: '0 auto', padding: '96px 24px 72px', textAlign: 'center' }}>
+          <div style={{ display: 'inline-block', background: '#f0fdf4', color: '#2d6a4f', fontSize: '13px', fontWeight: 600, padding: '4px 14px', borderRadius: '20px', marginBottom: '24px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+            By ATM Brokerage · 200+ closed transactions
+          </div>
+          <h1 style={{ fontSize: '56px', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', margin: '0 0 24px' }}>
+            The only trusted marketplace for verified ATM routes
+          </h1>
+          <p style={{ fontSize: '20px', color: '#6b7280', lineHeight: 1.6, margin: '0 0 40px' }}>
+            Every listing reviewed by our team. Buyers gated behind NDA. Deals structured — not wild west.
+          </p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <Link href="/listings" style={{ background: '#2d6a4f', color: '#fff', padding: '14px 32px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '16px' }}>
+              Browse ATM routes →
+            </Link>
+            <Link href="/sell" style={{ background: '#fff', color: '#2d6a4f', padding: '14px 32px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '16px', border: '2px solid #2d6a4f' }}>
+              List your route
+            </Link>
+          </div>
+        </section>
 
-          {/* Weekly Top 10 Banner */}
-          <section className="mb-8">
-            <div className="bg-emerald-600 rounded-xl px-6 py-4 flex items-center justify-between">
-              <div>
-                <div className="font-bold text-white">Weekly Top 10 — {label}</div>
-                <div className="text-emerald-100 text-sm">
-                  Best new listings ranked by DOM + buyer demand. Every Monday.
-                </div>
+        <section style={{ background: '#f9fafb', borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', padding: '32px 48px' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', textAlign: 'center' }}>
+            {[
+              { stat: '200+', label: 'Closed transactions' },
+              { stat: '$100M+', label: 'In deal volume since 2013' },
+              { stat: '100%', label: 'Listings reviewed by our team' },
+            ].map(({ stat, label }) => (
+              <div key={label}>
+                <div style={{ fontSize: '32px', fontWeight: 800, color: '#2d6a4f' }}>{stat}</div>
+                <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>{label}</div>
               </div>
-              <Link
-                href="/subscribe"
-                className="bg-white text-emerald-700 font-semibold px-5 py-2 rounded-lg hover:bg-emerald-50 transition text-sm whitespace-nowrap"
-              >
-                Subscribe →
-              </Link>
-            </div>
-          </section>
+            ))}
+          </div>
+        </section>
 
-          {/* Category Filter */}
-          <section className="mb-6">
-            <CategoryFilter
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              categoryCounts={categoryCounts}
-            />
-          </section>
-
-          {/* Stats — sourced from DealLedger */}
-          <section className="mb-10">
-            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className={`text-3xl md:text-4xl font-bold text-emerald-600 ${statsLoading ? 'opacity-40' : ''}`}>
-                    {statsLoading ? '—' : stats.totalVerified.toLocaleString()}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">Active Listings</div>
-                </div>
-                <div>
-                  <div className={`text-3xl md:text-4xl font-bold text-emerald-600 ${statsLoading ? 'opacity-40' : ''}`}>
-                    {statsLoading ? '—' : stats.medianDom !== null ? `${stats.medianDom}d` : '—'}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">Median Days on Market</div>
-                </div>
-                <div>
-                  <div className={`text-3xl md:text-4xl font-bold text-emerald-600 ${statsLoading ? 'opacity-40' : ''}`}>
-                    {statsLoading ? '—' : stats.pctOver365 !== null ? `${stats.pctOver365}%` : '—'}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">Listed Over 1 Year</div>
-                </div>
+        <section style={{ maxWidth: '900px', margin: '0 auto', padding: '80px 24px' }}>
+          <h2 style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-1px', marginBottom: '48px', textAlign: 'center' }}>How it works</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
+            {[
+              { step: '01', title: 'Sellers apply', body: 'Submit your route details through our intake wizard. We review every listing before it goes live — no junk.' },
+              { step: '02', title: 'Buyers sign NDA', body: 'Serious buyers create an account and sign a mutual NDA before accessing full financials, site lists, or processor details.' },
+              { step: '03', title: 'Deals close cleanly', body: 'Messaging, docs, and offers happen inside the deal room. Closing goes through escrow. We track every step.' },
+            ].map(({ step, title, body }) => (
+              <div key={step} style={{ padding: '32px', background: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#2d6a4f', marginBottom: '12px', letterSpacing: '1px' }}>{step}</div>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, margin: '0 0 12px' }}>{title}</h3>
+                <p style={{ fontSize: '15px', color: '#6b7280', lineHeight: 1.6, margin: 0 }}>{body}</p>
               </div>
-              <p className="text-center text-xs text-gray-400 mt-4">
-                Data sourced from <a href="https://dealledger.org" className="underline hover:text-gray-600" target="_blank" rel="noopener noreferrer">DealLedger</a> — updated daily
-              </p>
-            </div>
-          </section>
+            ))}
+          </div>
+        </section>
 
-          {/* Browse CTA */}
-          <section className="mb-12">
-            <div className="text-center py-8">
-              <Link
-                href={`/cleaning-index?category=${selectedCategory}`}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-10 py-5 text-white font-bold text-xl shadow-lg hover:bg-emerald-700 transition"
-              >
-                Browse All {statsLoading ? '' : stats.totalVerified.toLocaleString()} {label} Businesses →
-              </Link>
-              <p className="text-gray-500 text-sm mt-4">Filter by state, price, and days on market</p>
-            </div>
-          </section>
+        <section style={{ background: '#2d6a4f', color: '#fff', padding: '80px 24px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-1px', margin: '0 0 16px' }}>
+            Know what your route is worth
+          </h2>
+          <p style={{ fontSize: '18px', opacity: 0.85, margin: '0 0 36px' }}>
+            Get a free valuation from the team that has closed more ATM route transactions than anyone in the country.
+          </p>
+          <Link href="/sell" style={{ background: '#fff', color: '#2d6a4f', padding: '14px 36px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '16px' }}>
+            Get your free valuation →
+          </Link>
+        </section>
 
-          {/* Trust Cards */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="rounded-2xl border border-gray-200 p-6 bg-white">
-              <h3 className="font-bold text-lg mb-2">Complete Buying Guide</h3>
-              <p className="text-gray-600 mb-4">
-                What to look for when buying a {label.toLowerCase()} business — contracts, equipment, employee retention, and valuation multiples.
-              </p>
-              <Link href="/cleaning-business-for-sale" className="text-emerald-600 hover:text-emerald-700 font-semibold text-sm">
-                Read the guide →
-              </Link>
-            </div>
-            <div className="rounded-2xl border border-gray-200 p-6 bg-white">
-              <h3 className="font-bold text-lg mb-2">Sell Your {label} Business</h3>
-              <p className="text-gray-600 mb-4">
-                Get in front of serious buyers. Free listing, no commission taken.
-              </p>
-              <Link href="/sell" className="text-emerald-600 hover:text-emerald-700 font-semibold text-sm">
-                List your business →
-              </Link>
-            </div>
-          </section>
+        <footer style={{ padding: '40px 48px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', color: '#9ca3af' }}>
+          <div>© 2025 ATM Exits · Built by ATM Brokerage</div>
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <Link href="/privacy" style={{ color: '#9ca3af', textDecoration: 'none' }}>Privacy</Link>
+            <Link href="/terms" style={{ color: '#9ca3af', textDecoration: 'none' }}>Terms</Link>
+            <Link href="/contact" style={{ color: '#9ca3af', textDecoration: 'none' }}>Contact</Link>
+          </div>
+        </footer>
 
-        </main>
-
-        <Footer />
       </div>
     </>
-  );
+  )
 }
+
+export default Home

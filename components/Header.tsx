@@ -1,73 +1,19 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
+import Link from 'next/link'
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const navLinks = [
-    { label: 'Browse', href: '/cleaning-index' },
-    { label: 'Why CleaningExits', href: '/why' },
-    { label: 'Daily Audit', href: '/audit' },
-    { label: 'Sell', href: '/sell' },
-    { label: 'Contact', href: '/contact' },
-  ];
-
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <nav className="mx-auto max-w-6xl px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="font-bold text-xl text-gray-900 hover:text-emerald-600 transition">
-            Cleaning Exits
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-gray-700 hover:text-emerald-600 font-medium transition"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:text-emerald-600"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block py-2 text-gray-700 hover:text-emerald-600 font-medium transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        )}
-      </nav>
-    </header>
-  );
+    <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px', borderBottom: '1px solid #e5e7eb', fontFamily: 'system-ui, sans-serif' }}>
+      <Link href="/" style={{ fontWeight: 700, fontSize: '20px', letterSpacing: '-0.5px', color: '#1a1a1a', textDecoration: 'none' }}>
+        ATM Exits
+      </Link>
+      <div style={{ display: 'flex', gap: '32px', fontSize: '15px', alignItems: 'center' }}>
+        <Link href="/listings" style={{ color: '#374151', textDecoration: 'none' }}>Browse routes</Link>
+        <Link href="/sell" style={{ color: '#374151', textDecoration: 'none' }}>List your route</Link>
+        <Link href="/contact" style={{ color: '#374151', textDecoration: 'none' }}>Contact</Link>
+        <Link href="/sell" style={{ background: '#2d6a4f', color: '#fff', padding: '8px 20px', borderRadius: '6px', textDecoration: 'none', fontWeight: 500 }}>
+          Get a valuation →
+        </Link>
+      </div>
+    </nav>
+  )
 }
-
