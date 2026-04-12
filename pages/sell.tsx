@@ -104,7 +104,7 @@ export default function Sell() {
       const { error: insertError } = await supabase
         .from('listings_pending')
         .insert({
-          seller_id: '00000000-0000-0000-0000-000000000000', // placeholder — replaced after auth
+          seller_id: null, // placeholder — replaced after auth
           status: 'submitted',
           machine_count: parseInt(form.machine_count) || null,
           location_types: form.location_types || null,
