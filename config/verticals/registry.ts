@@ -1,7 +1,6 @@
-import { VerticalRegistry } from '../types';
 import { atmVertical } from './atm.vertical';
 
-export const verticalRegistry: VerticalRegistry = {
+export const verticalRegistry = {
   verticals: {
     atm: atmVertical,
   },
