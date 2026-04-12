@@ -1,36 +1,9 @@
-name: Daily BizBuySell Scraper
-
-on:
-  # Schedule the workflow to run daily at 9:00 AM UTC
-  schedule:
-    - cron: '0 9 * * *'
-
-  # Allow manual trigger from the Actions tab
-  workflow_dispatch:
-
+# Placeholder — ATMExits does not run scrapers
+# Sellers self-list via the intake wizard
+name: placeholder
+on: workflow_dispatch
 jobs:
-  scrape_and_save:
+  placeholder:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run daily scraper
-        run: python daily_scraper.py
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          PROXY_URL: ${{ secrets.PROXY_URL }}
-          MAX_PAGES: 500
-          WORKERS: 5
+      - run: echo "No automated scrapers for ATMExits"
