@@ -8,89 +8,96 @@ const Home: NextPage = () => {
       <Head>
         <title>ATM Exits — The Trusted Marketplace for ATM Routes</title>
         <meta name="description" content="Buy and sell verified ATM routes. Built by ATM Brokerage — 200+ closed transactions, $100M+ in deal volume since 2013." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <div style={{ fontFamily: 'system-ui, sans-serif', color: '#1a1a1a' }}>
 
-        <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px', borderBottom: '1px solid #e5e7eb' }}>
-          <div style={{ fontWeight: 700, fontSize: '20px', letterSpacing: '-0.5px' }}>ATM Exits</div>
-          <div style={{ display: 'flex', gap: '32px', fontSize: '15px', alignItems: 'center' }}>
-            <Link href="/listings" style={{ color: '#374151', textDecoration: 'none' }}>Browse routes</Link>
-            <Link href="/sell" style={{ color: '#374151', textDecoration: 'none' }}>List your route</Link>
-            <Link href="/contact" style={{ color: '#374151', textDecoration: 'none' }}>Contact</Link>
-            <Link href="/sell" style={{ background: '#2d6a4f', color: '#fff', padding: '8px 20px', borderRadius: '6px', textDecoration: 'none', fontWeight: 500 }}>
-              Get a valuation →
+        {/* Nav */}
+        <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ fontWeight: 700, fontSize: '18px', letterSpacing: '-0.5px' }}>ATM Exits</div>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Link href="/listings" style={{ color: '#374151', textDecoration: 'none', fontSize: '14px' }}>Browse</Link>
+            <Link href="/sell" style={{ color: '#374151', textDecoration: 'none', fontSize: '14px' }}>List route</Link>
+            <Link href="/contact" style={{ color: '#374151', textDecoration: 'none', fontSize: '14px' }}>Contact</Link>
+            <Link href="/sell" style={{ background: '#2d6a4f', color: '#fff', padding: '8px 16px', borderRadius: '6px', textDecoration: 'none', fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap' }}>
+              Get a valuation
             </Link>
           </div>
         </nav>
 
-        <section style={{ maxWidth: '760px', margin: '0 auto', padding: '96px 24px 72px', textAlign: 'center' }}>
-          <div style={{ display: 'inline-block', background: '#f0fdf4', color: '#2d6a4f', fontSize: '13px', fontWeight: 600, padding: '4px 14px', borderRadius: '20px', marginBottom: '24px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+        {/* Hero */}
+        <section style={{ maxWidth: '720px', margin: '0 auto', padding: '64px 20px 56px', textAlign: 'center' }}>
+          <div style={{ display: 'inline-block', background: '#f0fdf4', color: '#2d6a4f', fontSize: '12px', fontWeight: 600, padding: '4px 14px', borderRadius: '20px', marginBottom: '20px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
             By ATM Brokerage · 200+ closed transactions
           </div>
-          <h1 style={{ fontSize: '56px', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', margin: '0 0 24px' }}>
+          <h1 style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-1.5px', margin: '0 0 20px' }}>
             The only trusted marketplace for verified ATM routes
           </h1>
-          <p style={{ fontSize: '20px', color: '#6b7280', lineHeight: 1.6, margin: '0 0 40px' }}>
+          <p style={{ fontSize: 'clamp(16px, 2.5vw, 19px)', color: '#6b7280', lineHeight: 1.6, margin: '0 0 32px' }}>
             Every listing reviewed by our team. Buyers gated behind NDA. Deals structured — not wild west.
           </p>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <Link href="/listings" style={{ background: '#2d6a4f', color: '#fff', padding: '14px 32px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/listings" style={{ background: '#2d6a4f', color: '#fff', padding: '13px 28px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '15px' }}>
               Browse ATM routes →
             </Link>
-            <Link href="/sell" style={{ background: '#fff', color: '#2d6a4f', padding: '14px 32px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '16px', border: '2px solid #2d6a4f' }}>
+            <Link href="/sell" style={{ background: '#fff', color: '#2d6a4f', padding: '13px 28px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '15px', border: '2px solid #2d6a4f' }}>
               List your route
             </Link>
           </div>
         </section>
 
-        <section style={{ background: '#f9fafb', borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', padding: '32px 48px' }}>
-          <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', textAlign: 'center' }}>
+        {/* Trust bar */}
+        <section style={{ background: '#f9fafb', borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', padding: '28px 20px' }}>
+          <div style={{ maxWidth: '700px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', textAlign: 'center' }}>
             {[
               { stat: '200+', label: 'Closed transactions' },
-              { stat: '$100M+', label: 'In deal volume since 2013' },
-              { stat: '100%', label: 'Listings reviewed by our team' },
+              { stat: '$100M+', label: 'Deal volume since 2013' },
+              { stat: '100%', label: 'Listings reviewed' },
             ].map(({ stat, label }) => (
               <div key={label}>
-                <div style={{ fontSize: '32px', fontWeight: 800, color: '#2d6a4f' }}>{stat}</div>
-                <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>{label}</div>
+                <div style={{ fontSize: 'clamp(22px, 5vw, 30px)', fontWeight: 800, color: '#2d6a4f' }}>{stat}</div>
+                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px', lineHeight: 1.4 }}>{label}</div>
               </div>
             ))}
           </div>
         </section>
 
-        <section style={{ maxWidth: '900px', margin: '0 auto', padding: '80px 24px' }}>
-          <h2 style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-1px', marginBottom: '48px', textAlign: 'center' }}>How it works</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
+        {/* How it works */}
+        <section style={{ maxWidth: '860px', margin: '0 auto', padding: '64px 20px' }}>
+          <h2 style={{ fontSize: 'clamp(24px, 4vw, 34px)', fontWeight: 700, letterSpacing: '-0.5px', marginBottom: '40px', textAlign: 'center' }}>How it works</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
             {[
-              { step: '01', title: 'Sellers apply', body: 'Submit your route details through our intake wizard. We review every listing before it goes live — no junk.' },
-              { step: '02', title: 'Buyers sign NDA', body: 'Serious buyers create an account and sign a mutual NDA before accessing full financials, site lists, or processor details.' },
-              { step: '03', title: 'Deals close cleanly', body: 'Messaging, docs, and offers happen inside the deal room. Closing goes through escrow. We track every step.' },
+              { step: '01', title: 'Sellers apply', body: 'Submit your route details through our intake wizard. We review every listing before it goes live.' },
+              { step: '02', title: 'Buyers sign NDA', body: 'Serious buyers sign a mutual NDA before accessing full financials, site lists, or processor details.' },
+              { step: '03', title: 'Deals close cleanly', body: 'Messaging, docs, and offers happen inside the deal room. Closing goes through escrow.' },
             ].map(({ step, title, body }) => (
-              <div key={step} style={{ padding: '32px', background: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: '#2d6a4f', marginBottom: '12px', letterSpacing: '1px' }}>{step}</div>
-                <h3 style={{ fontSize: '20px', fontWeight: 700, margin: '0 0 12px' }}>{title}</h3>
-                <p style={{ fontSize: '15px', color: '#6b7280', lineHeight: 1.6, margin: 0 }}>{body}</p>
+              <div key={step} style={{ padding: '24px', background: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#2d6a4f', marginBottom: '10px', letterSpacing: '1px' }}>{step}</div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 10px' }}>{title}</h3>
+                <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: 1.6, margin: 0 }}>{body}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section style={{ background: '#2d6a4f', color: '#fff', padding: '80px 24px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-1px', margin: '0 0 16px' }}>
+        {/* CTA */}
+        <section style={{ background: '#2d6a4f', color: '#fff', padding: '64px 20px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 700, letterSpacing: '-0.5px', margin: '0 0 12px' }}>
             Know what your route is worth
           </h2>
-          <p style={{ fontSize: '18px', opacity: 0.85, margin: '0 0 36px' }}>
-            Get a free valuation from the team that has closed more ATM route transactions than anyone in the country.
+          <p style={{ fontSize: '16px', opacity: 0.85, margin: '0 0 28px' }}>
+            Free valuation from the team behind 200+ closed ATM route transactions.
           </p>
-          <Link href="/sell" style={{ background: '#fff', color: '#2d6a4f', padding: '14px 36px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '16px' }}>
+          <Link href="/sell" style={{ background: '#fff', color: '#2d6a4f', padding: '13px 32px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '15px' }}>
             Get your free valuation →
           </Link>
         </section>
 
-        <footer style={{ padding: '40px 48px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', color: '#9ca3af' }}>
+        {/* Footer */}
+        <footer style={{ padding: '28px 20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', color: '#9ca3af', flexWrap: 'wrap', gap: '12px' }}>
           <div>© 2026 ATM Exits · Built by ATM Brokerage</div>
-          <div style={{ display: 'flex', gap: '24px' }}>
+          <div style={{ display: 'flex', gap: '20px' }}>
             <Link href="/privacy" style={{ color: '#9ca3af', textDecoration: 'none' }}>Privacy</Link>
             <Link href="/terms" style={{ color: '#9ca3af', textDecoration: 'none' }}>Terms</Link>
             <Link href="/contact" style={{ color: '#9ca3af', textDecoration: 'none' }}>Contact</Link>
