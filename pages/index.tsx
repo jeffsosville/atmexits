@@ -89,7 +89,7 @@ const Home: NextPage = () => {
         </section>
 
         <footer style={{ padding: '40px 48px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', color: '#9ca3af' }}>
-          <div>© 2025 ATM Exits · Built by ATM Brokerage</div>
+          <div>© 2026 ATM Exits · Built by ATM Brokerage</div>
           <div style={{ display: 'flex', gap: '24px' }}>
             <Link href="/privacy" style={{ color: '#9ca3af', textDecoration: 'none' }}>Privacy</Link>
             <Link href="/terms" style={{ color: '#9ca3af', textDecoration: 'none' }}>Terms</Link>
