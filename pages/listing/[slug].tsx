@@ -29,7 +29,14 @@ export default function ListingPage({ listing, hasNda }: { listing: Listing, has
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ listing_id: listing.id, full_name: name, email, agreed }),
     })
-    if (res.ok) { setStep('done') } else { setError('Something went wrong. Please try again.') }
+    if (res.ok) {
+      const data = await res.json()
+      if (data.deal_room_id) {
+        window.location.href = '/deal-room/' + data.deal_room_id
+      } else {
+        setStep('done')
+      }
+    } else { setError('Something went wrong. Please try again.') }
     setLoading(false)
   }
 
