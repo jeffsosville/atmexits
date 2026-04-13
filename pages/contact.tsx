@@ -1,78 +1,48 @@
-// pages/contact.tsx
-import Head from 'next/head';
-import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Head from 'next/head'
+import Link from 'next/link'
 
 export default function Contact() {
   return (
     <>
       <Head>
-        <title>Contact Us | Cleaning Exits</title>
-        <meta name="description" content="Get in touch with Cleaning Exits about buying or selling a cleaning business." />
+        <title>Contact | ATM Exits</title>
+        <meta name="description" content="Get in touch with ATM Exits about buying or selling an ATM route." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-
-      <Header />
-
-      <main className="mx-auto max-w-4xl px-4 py-12">
-        <h1 className="text-4xl font-bold mb-6">Contact Us</h1>
-        
-        <div className="bg-white rounded-xl border p-8 mb-8">
-          <p className="text-lg text-gray-700 mb-6">
-            Have questions about a listing? Want to sell your cleaning business? Just want to chat? 
-            We're here to help.
-          </p>
-
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Email</h2>
-              <a 
-                href="mailto:hello@cleaningexits.com" 
-                className="text-emerald-600 hover:text-emerald-700 text-lg"
-              >
-                hello@cleaningexits.com
-              </a>
+      <div style={{ fontFamily: 'system-ui, sans-serif', minHeight: '100vh', background: '#f9fafb' }}>
+        <nav style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ fontWeight: 700, fontSize: '18px', color: '#1a1a1a', textDecoration: 'none' }}>ATM Exits</Link>
+          <Link href="/sell" style={{ background: '#2d6a4f', color: '#fff', padding: '8px 16px', borderRadius: '6px', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>List your route</Link>
+        </nav>
+        <div style={{ maxWidth: '600px', margin: '0 auto', padding: '48px 16px' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', margin: '0 0 8px' }}>Contact us</h1>
+          <p style={{ color: '#6b7280', fontSize: '15px', margin: '0 0 40px' }}>Questions about buying or selling an ATM route? We typically respond within one business day.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>Email</div>
+              <a href="mailto:hello@atmexits.com" style={{ fontSize: '18px', fontWeight: 600, color: '#2d6a4f', textDecoration: 'none' }}>hello@atmexits.com</a>
             </div>
-
-            <div>
-              <h2 className="text-xl font-semibold mb-2">For Buyers</h2>
-              <p className="text-gray-600">
-                Interested in a specific listing? Just fill out the form on that listing's page 
-                and we'll connect you with the broker or answer your questions directly.
-              </p>
+            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>Sellers</div>
+              <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 12px', lineHeight: 1.6 }}>Ready to list your ATM route? Submit through our intake form and we will review within 1-2 business days.</p>
+              <Link href="/sell" style={{ color: '#2d6a4f', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>Start your listing &rarr;</Link>
             </div>
-
-            <div>
-              <h2 className="text-xl font-semibold mb-2">For Sellers</h2>
-              <p className="text-gray-600">
-                Want to list your cleaning business? Email us at{' '}
-                <a href="mailto:hello@cleaningexits.com" className="text-emerald-600 hover:underline">
-                  hello@cleaningexits.com
-                </a>
-                {' '}and we'll get back to you within 24 hours.
-              </p>
+            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>Buyers</div>
+              <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 12px', lineHeight: 1.6 }}>Browse available routes and sign NDA to access full financials, site lists, and processor details.</p>
+              <Link href="/listings" style={{ color: '#2d6a4f', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>Browse ATM routes &rarr;</Link>
             </div>
-
-            <div>
-              <h2 className="text-xl font-semibold mb-2">For Brokers</h2>
-              <p className="text-gray-600">
-                Want to partner with us or get your listings featured? Let's talk.{' '}
-                <a href="mailto:hello@cleaningexits.com" className="text-emerald-600 hover:underline">
-                  hello@cleaningexits.com
-                </a>
-              </p>
+            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>ATM Brokerage</div>
+              <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 4px', lineHeight: 1.6 }}>ATM Exits is built by ATM Brokerage — the national leader in ATM route transactions since 2013.</p>
+              <a href="https://atmbrokerage.com" target="_blank" rel="noopener noreferrer" style={{ color: '#2d6a4f', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>atmbrokerage.com &rarr;</a>
             </div>
           </div>
         </div>
-
-        <div className="text-center">
-          <Link href="/" className="text-emerald-600 hover:text-emerald-700 font-semibold">
-            ← Back to Home
-          </Link>
-        </div>
-      </main>
-
-      <Footer />
+        <footer style={{ borderTop: '1px solid #e5e7eb', padding: '24px 16px', textAlign: 'center', fontSize: '13px', color: '#9ca3af' }}>
+          &copy; 2026 ATM Exits &middot; Built by ATM Brokerage
+        </footer>
+      </div>
     </>
-  );
+  )
 }
