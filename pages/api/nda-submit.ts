@@ -7,24 +7,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { listing_id, full_name, email, agreed } = req.body
   if (!listing_id || !full_name || !email || !agreed) return res.status(400).json({ error: 'Missing fields' })
 
-  // Insert NDA record
-  const { error: ndaError } = await supabase.from('ndas').insert({
+  // Insert NDA (ignore duplicates)
+  await supabase.from('ndas').insert({
     listing_id, user_id: null, status: 'signed',
     signed_at: new Date().toISOString(), esign_reference_id: email
   })
-  if (ndaError && !ndaError.message.includes('duplicate')) return res.status(500).json({ error: ndaError.message })
 
-  // Get or create deal room for this listing
-  let { data: dealRoom } = await supabase.from('deal_rooms').select('id').eq('listing_id', listing_id).single()
-  if (!dealRoom) {
-    const { data: listing } = await supabase.from('listings_live').select('seller_id').eq('id', listing_id).single()
-    const { data: newRoom } = await supabase.from('deal_rooms').insert({
-      listing_id, seller_id: null, status: 'open'
-    }).select('id').single()
-    dealRoom = newRoom
+  // Find existing deal room for this listing first
+  const { data: existing } = await supabase
+    .from('deal_rooms')
+    .select('id')
+    .eq('listing_id', listing_id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+
+  let dealRoomId = existing?.[0]?.id
+
+  // Only create if none exists
+  if (!dealRoomId) {
+    const { data: newRoom } = await supabase
+      .from('deal_rooms')
+      .insert({ listing_id, seller_id: null, status: 'open' })
+      .select('id')
+      .single()
+    dealRoomId = newRoom?.id
   }
 
-  const dealRoomId = dealRoom?.id
+  if (!dealRoomId) return res.status(500).json({ error: 'Could not create deal room' })
 
   // Set cookies
   res.setHeader('Set-Cookie', [
