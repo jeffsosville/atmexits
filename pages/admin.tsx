@@ -93,7 +93,11 @@ export default function Admin() {
         {/* Header */}
         <div style={{ background: '#1a1a1a', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ color: '#fff', fontWeight: 700, fontSize: '18px' }}>ATM Exits · Admin</div>
-          <a href="/" style={{ color: '#9ca3af', fontSize: '13px', textDecoration: 'none' }}>← Back to site</a>
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+            <a href="/admin" style={{ color: '#fff', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}>Listings</a>
+            <a href="/admin-deals" style={{ color: '#9ca3af', fontSize: '13px', textDecoration: 'none' }}>Deal Rooms</a>
+            <a href="/" style={{ color: '#9ca3af', fontSize: '13px', textDecoration: 'none' }}>← Site</a>
+          </div>
         </div>
 
         <div style={{ display: 'flex', height: 'calc(100vh - 56px)' }}>

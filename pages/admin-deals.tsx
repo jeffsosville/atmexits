@@ -70,9 +70,10 @@ export default function AdminDeals() {
 
         <div style={{ background: '#1a1a1a', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ color: '#fff', fontWeight: 700, fontSize: '16px' }}>ATM Exits · Deal Rooms</div>
-          <div style={{ display: 'flex', gap: '16px' }}>
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
             <Link href="/admin" style={{ color: '#9ca3af', fontSize: '13px', textDecoration: 'none' }}>Listings</Link>
-            <Link href="/" style={{ color: '#9ca3af', fontSize: '13px', textDecoration: 'none' }}>Site</Link>
+            <Link href="/admin-deals" style={{ color: '#fff', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}>Deal Rooms</Link>
+            <Link href="/" style={{ color: '#9ca3af', fontSize: '13px', textDecoration: 'none' }}>← Site</Link>
           </div>
         </div>
 
