@@ -110,15 +110,23 @@ export default function DealRoomPage({ dealRoom, listing, messages: init_msgs, o
                 <p style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '20px' }}>No messages yet. Ask a question below.</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-                  {messages.map((m: any) => (
-                    <div key={m.id} style={{ padding: '12px 16px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #f3f4f6' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <span style={{ fontSize: '13px', fontWeight: 600 }}>{m.sender_name || 'Buyer'}</span>
-                        <span style={{ fontSize: '12px', color: '#9ca3af' }}>{new Date(m.sent_at).toLocaleDateString()}</span>
+                  {messages.map((m: any) => {
+                    const isSeller = m.sender_role === 'seller'
+                    return (
+                      <div key={m.id} style={{ padding: '12px 16px', background: isSeller ? '#f0fdf4' : '#f9fafb', borderRadius: '8px', border: isSeller ? '1px solid #bbf7d0' : '1px solid #f3f4f6' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', alignItems: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '13px', fontWeight: 600 }}>{m.sender_name || (isSeller ? 'ATM Exits' : 'Buyer')}</span>
+                            <span style={{ fontSize: '11px', fontWeight: 600, padding: '1px 8px', borderRadius: '20px', background: isSeller ? '#2d6a4f' : '#e5e7eb', color: isSeller ? '#fff' : '#6b7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              {isSeller ? 'Seller' : 'Buyer'}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '12px', color: '#9ca3af' }}>{new Date(m.sent_at).toLocaleDateString()}</span>
+                        </div>
+                        <p style={{ fontSize: '14px', color: '#374151', margin: 0, lineHeight: 1.5 }}>{m.body}</p>
                       </div>
-                      <p style={{ fontSize: '14px', color: '#374151', margin: 0, lineHeight: 1.5 }}>{m.body}</p>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
               <textarea value={msgBody} onChange={e => setMsgBody(e.target.value)} placeholder="Ask a question about this route..." style={{ ...inp, minHeight: '80px', resize: 'vertical', marginBottom: '10px' }} />
