@@ -13,7 +13,7 @@ type Listing = {
 const fmt = (n: number | null) => n ? '$' + n.toLocaleString() : null
 const inp: any = { width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '15px', boxSizing: 'border-box', fontFamily: 'inherit' }
 
-export default function ListingPage({ listing, hasNda }: { listing: Listing, hasNda: boolean }) {
+export default function ListingPage({ listing, hasNda, dealRoomId }: { listing: Listing, hasNda: boolean, dealRoomId: string | null }) {
   const [step, setStep] = useState<'gate'|'form'|'done'>(hasNda ? 'done' : 'gate')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -127,11 +127,12 @@ export default function ListingPage({ listing, hasNda }: { listing: Listing, has
                 )}
               </div>
               <div style={{ background: '#2d6a4f', borderRadius: '12px', padding: '28px 24px', color: '#fff', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 8px' }}>Interested in this route?</h3>
-                <p style={{ opacity: 0.85, margin: '0 0 18px', fontSize: '14px' }}>Contact ATM Exits to start the conversation.</p>
-                <a href={'mailto:hello@atmexits.com?subject=Interested: ' + listing.slug} style={{ background: '#fff', color: '#2d6a4f', padding: '10px 24px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '14px' }}>
-                  Contact us about this route
+                <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 8px' }}>Ready to move forward?</h3>
+                <p style={{ opacity: 0.85, margin: '0 0 18px', fontSize: '14px' }}>Enter the deal room to ask questions, submit an offer, or request more information.</p>
+                <a href={'/deal-room/' + dealRoomId} style={{ background: '#fff', color: '#2d6a4f', padding: '10px 24px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '14px', display: 'inline-block', marginBottom: '10px' }}>
+                  Enter deal room
                 </a>
+                <div style={{ opacity: 0.7, fontSize: '12px' }}>Or email us: hello@atmexits.com</div>
               </div>
             </>
           )}
@@ -149,5 +150,10 @@ export const getServerSideProps: GetServerSideProps = async ({ params, req }) =>
   const { data: listing } = await supabase.from('listings_live').select('*').eq('slug', params?.slug as string).eq('status', 'active').single()
   if (!listing) return { notFound: true }
   const hasNda = !!req.cookies['nda_' + listing.id]
-  return { props: { listing, hasNda } }
+  let dealRoomId = null
+  if (hasNda) {
+    const { data: dr } = await supabase.from('deal_rooms').select('id').eq('listing_id', listing.id).single()
+    dealRoomId = dr?.id || null
+  }
+  return { props: { listing, hasNda, dealRoomId } }
 }
