@@ -54,7 +54,8 @@ export default function SellerPortal() {
       { onConflict: 'id', ignoreDuplicates: false }
     )
     const { data: user } = await supabase.from('users').select('*').eq('id', authUserId).single()
-    setProfile(user || { id: authUserId, email: authEmail, full_name: '' })
+    setProfile({ id: authUserId, email: authEmail, full_name: '' })
+    try { await supabase.from('users').upsert({ id: authUserId, email: authEmail, role: 'seller' }, { onConflict: 'id', ignoreDuplicates: false }); const { data: u } = await supabase.from('users').select('*').eq('id', authUserId).single(); if (u) setProfile(u) } catch(e) {}
     await loadListingsAndRooms(authUserId)
   }
 
