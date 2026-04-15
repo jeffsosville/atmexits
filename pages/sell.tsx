@@ -120,11 +120,11 @@ export default function Sell() {
       if (insertError) throw insertError
 
       // Send magic link so seller can access their portal
-      if (formData.email) {
+      if (form.email) {
         await fetch('/api/auth/seller-magic-link', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: formData.email })
+          body: JSON.stringify({ email: form.email })
         })
       }
       setSubmitted(true)
