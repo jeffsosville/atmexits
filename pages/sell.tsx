@@ -104,7 +104,7 @@ export default function Sell() {
       const { error: insertError } = await supabase
         .from('listings_pending')
         .insert({
-          seller_id: null, // placeholder — replaced after auth
+          seller_id: (await supabase.auth.getSession()).data.session?.user?.id || null,
           status: 'submitted',
           machine_count: parseInt(form.machine_count) || null,
           location_types: form.location_types || null,
@@ -118,6 +118,15 @@ export default function Sell() {
         })
 
       if (insertError) throw insertError
+
+      // Send magic link so seller can access their portal
+      if (formData.email) {
+        await fetch('/api/auth/seller-magic-link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: formData.email })
+        })
+      }
       setSubmitted(true)
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Please try again.')
