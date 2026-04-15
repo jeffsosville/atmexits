@@ -9,10 +9,7 @@ const supabase = createClient(
 )
 
 type UserProfile = { id: string; email: string; full_name: string }
-type Listing = {
-  id: string; status: string; machine_count: number
-  asking_price: number; submitted_at: string; gross_monthly_surcharge: number
-}
+type Listing = { id: string; status: string; machine_count: number; asking_price: number; submitted_at: string; gross_monthly_surcharge: number }
 type Message = { id: string; body: string; sender_name: string; sender_role: string; sent_at: string }
 type DealRoom = { id: string; status: string; listing_id: string; buyer_name: string; buyer_email: string; messages: Message[] }
 
@@ -22,31 +19,33 @@ export default function SellerPortal() {
   const [listings, setListings] = useState<Listing[]>([])
   const [dealRooms, setDealRooms] = useState<DealRoom[]>([])
   const [loading, setLoading] = useState(true)
+  const [authed, setAuthed] = useState(false)
   const [replyText, setReplyText] = useState<Record<string, string>>({})
   const [sending, setSending] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'listings' | 'buyers'>('listings')
-  const initialized = useRef(false)
+  const dataLoaded = useRef(false)
 
   useEffect(() => {
-    if (initialized.current) return
-    initialized.current = true
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'INITIAL_SESSION') {
-        if (session) {
-          await loadData(session.user.id, session.user.email!)
-        } else {
-          // No session on initial load — redirect to login
-          router.replace('/seller-login')
-        }
-      } else if (event === 'SIGNED_IN' && session) {
+      if (session && !dataLoaded.current) {
+        dataLoaded.current = true
+        setAuthed(true)
         await loadData(session.user.id, session.user.email!)
-      } else if (event === 'SIGNED_OUT') {
+      } else if (!session && event === 'SIGNED_OUT') {
         router.replace('/seller-login')
       }
     })
 
-    return () => subscription.unsubscribe()
+    // Fallback: if no auth event fires within 5s, redirect to login
+    const timeout = setTimeout(async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) router.replace('/seller-login')
+    }, 5000)
+
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(timeout)
+    }
   }, [])
 
   async function loadData(authUserId: string, authEmail: string) {
@@ -54,7 +53,6 @@ export default function SellerPortal() {
       { id: authUserId, email: authEmail, role: 'seller' },
       { onConflict: 'id', ignoreDuplicates: false }
     )
-
     const { data: user } = await supabase.from('users').select('*').eq('id', authUserId).single()
     setProfile(user || { id: authUserId, email: authEmail, full_name: '' })
     await loadListingsAndRooms(authUserId)
@@ -112,6 +110,7 @@ export default function SellerPortal() {
     rejected: 'bg-red-900 text-red-300', active: 'bg-blue-900 text-blue-300',
   }[s] || 'bg-gray-800 text-gray-400')
 
+  // Still waiting for auth
   if (loading) return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center">
       <div className="text-white text-lg">Loading your portal...</div>
