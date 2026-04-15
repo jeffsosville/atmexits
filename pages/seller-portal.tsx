@@ -26,26 +26,13 @@ export default function SellerPortal() {
   const dataLoaded = useRef(false)
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session && !dataLoaded.current) {
-        dataLoaded.current = true
-        setAuthed(true)
-        await loadData(session.user.id, session.user.email!)
-      } else if (!session && event === 'SIGNED_OUT') {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        await loadData(session.user.id, session.user.email)
+      } else {
         router.replace('/seller-login')
       }
     })
-
-    // Fallback: if no auth event fires within 5s, redirect to login
-    const timeout = setTimeout(async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) router.replace('/seller-login')
-    }, 5000)
-
-    return () => {
-      subscription.unsubscribe()
-      clearTimeout(timeout)
-    }
   }, [])
 
   async function loadData(authUserId: string, authEmail: string) {
