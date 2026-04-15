@@ -15,7 +15,6 @@ export default function SellerLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // If already logged in, redirect
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) router.replace('/seller-portal')
@@ -44,26 +43,24 @@ export default function SellerLogin() {
 
   return (
     <>
-      <Head>
-        <title>Seller Login | ATM Exits</title>
-      </Head>
+      <Head><title>Seller Login | ATM Exits</title></Head>
       <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
         <div className="w-full max-w-md bg-gray-900 rounded-2xl p-8 border border-gray-800">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white mb-2">Seller Portal</h1>
-            <p className="text-gray-400 text-sm">
-              Enter your email to receive a secure login link
-            </p>
+            <div className="text-2xl font-bold text-green-400 mb-1">ATM Exits</div>
+            <h1 className="text-xl font-semibold text-white mb-2">Seller Portal</h1>
+            <p className="text-gray-400 text-sm">Enter your email to receive a secure sign-in link</p>
           </div>
 
           {sent ? (
             <div className="text-center py-6">
-              <div className="text-4xl mb-4">📬</div>
+              <div className="text-5xl mb-4">📬</div>
               <p className="text-white font-medium mb-2">Check your email</p>
               <p className="text-gray-400 text-sm">
-                We sent a secure link to <strong className="text-white">{email}</strong>.<br />
+                We sent a sign-in link to <span className="text-white font-medium">{email}</span>.<br />
                 Click it to access your seller portal.
               </p>
+              <p className="text-gray-600 text-xs mt-4">Link expires in 1 hour. Check spam if you don't see it.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,26 +72,22 @@ export default function SellerLogin() {
                   onChange={e => setEmail(e.target.value)}
                   required
                   placeholder="you@example.com"
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500 transition-colors"
                 />
               </div>
-
-              {error && (
-                <p className="text-red-400 text-sm">{error}</p>
-              )}
-
+              {error && <p className="text-red-400 text-sm">{error}</p>}
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-medium py-3 rounded-lg transition-colors"
               >
-                {loading ? 'Sending...' : 'Send login link'}
+                {loading ? 'Sending...' : 'Send sign-in link'}
               </button>
             </form>
           )}
 
-          <p className="text-center text-xs text-gray-600 mt-6">
-            <a href="/" className="hover:text-gray-400">← Back to ATM Exits</a>
+          <p className="text-center text-xs text-gray-600 mt-8">
+            <a href="/" className="hover:text-gray-400 transition-colors">← Back to ATM Exits</a>
           </p>
         </div>
       </div>
