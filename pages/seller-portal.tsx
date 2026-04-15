@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { createClient } from '@supabase/supabase-js'
 import Head from 'next/head'
@@ -13,15 +13,8 @@ type Listing = {
   id: string; status: string; machine_count: number
   asking_price: number; submitted_at: string; gross_monthly_surcharge: number
 }
-type Message = {
-  id: string; body: string; sender_name: string
-  sender_role: string; sent_at: string
-}
-type DealRoom = {
-  id: string; status: string; listing_id: string
-  buyer_name: string; buyer_email: string
-  messages: Message[]
-}
+type Message = { id: string; body: string; sender_name: string; sender_role: string; sent_at: string }
+type DealRoom = { id: string; status: string; listing_id: string; buyer_name: string; buyer_email: string; messages: Message[] }
 
 export default function SellerPortal() {
   const router = useRouter()
@@ -32,31 +25,24 @@ export default function SellerPortal() {
   const [replyText, setReplyText] = useState<Record<string, string>>({})
   const [sending, setSending] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'listings' | 'buyers'>('listings')
+  const initialized = useRef(false)
 
   useEffect(() => {
-    // Listen for auth state — this fires when magic link token in URL hash is processed
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        await loadData(session.user.id, session.user.email!)
-      } else if (event === 'SIGNED_OUT' || (!session && event !== 'INITIAL_SESSION')) {
-        router.replace('/seller-login')
-      }
-    })
+    if (initialized.current) return
+    initialized.current = true
 
-    // Also check existing session for returning visitors
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        if (session) {
+          await loadData(session.user.id, session.user.email!)
+        } else {
+          // No session on initial load — redirect to login
+          router.replace('/seller-login')
+        }
+      } else if (event === 'SIGNED_IN' && session) {
         await loadData(session.user.id, session.user.email!)
-      } else {
-        // No session yet — wait for onAuthStateChange to fire from URL hash
-        setTimeout(() => {
-          supabase.auth.getSession().then(({ data: { session } }) => {
-            if (!session) {
-              setLoading(false)
-              router.replace('/seller-login')
-            }
-          })
-        }, 3000)
+      } else if (event === 'SIGNED_OUT') {
+        router.replace('/seller-login')
       }
     })
 
@@ -64,76 +50,41 @@ export default function SellerPortal() {
   }, [])
 
   async function loadData(authUserId: string, authEmail: string) {
-    // Upsert user row
-    await supabase
-      .from('users')
-      .upsert(
-        { id: authUserId, email: authEmail, role: 'seller' },
-        { onConflict: 'id', ignoreDuplicates: false }
-      )
+    await supabase.from('users').upsert(
+      { id: authUserId, email: authEmail, role: 'seller' },
+      { onConflict: 'id', ignoreDuplicates: false }
+    )
 
-    const { data: user } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', authUserId)
-      .single()
-
+    const { data: user } = await supabase.from('users').select('*').eq('id', authUserId).single()
     setProfile(user || { id: authUserId, email: authEmail, full_name: '' })
     await loadListingsAndRooms(authUserId)
   }
 
   async function loadListingsAndRooms(sellerId: string) {
     const { data: pending } = await supabase
-      .from('listings_pending')
-      .select('*')
-      .eq('seller_id', sellerId)
+      .from('listings_pending').select('*').eq('seller_id', sellerId)
       .order('submitted_at', { ascending: false })
     setListings(pending || [])
 
     const { data: rooms } = await supabase
-      .from('deal_rooms')
-      .select('*, messages(*)')
-      .eq('seller_id', sellerId)
-      .order('created_at', { ascending: false })
+      .from('deal_rooms').select('*, messages(*)')
+      .eq('seller_id', sellerId).order('created_at', { ascending: false })
 
     if (rooms && rooms.length > 0) {
       const enriched = await Promise.all(rooms.map(async (room: any) => {
-        const { data: nda } = await supabase
-          .from('ndas')
-          .select('user_id')
-          .eq('listing_id', room.listing_id)
-          .neq('user_id', sellerId)
-          .limit(1)
-          .single()
-
-        let buyer_name = 'Anonymous Buyer'
-        let buyer_email = ''
-
+        const { data: nda } = await supabase.from('ndas').select('user_id')
+          .eq('listing_id', room.listing_id).neq('user_id', sellerId).limit(1).single()
+        let buyer_name = 'Anonymous Buyer', buyer_email = ''
         if (nda?.user_id) {
-          const { data: buyer } = await supabase
-            .from('users')
-            .select('full_name, email')
-            .eq('id', nda.user_id)
-            .single()
-          if (buyer) {
-            buyer_name = buyer.full_name || buyer.email
-            buyer_email = buyer.email
-          }
+          const { data: buyer } = await supabase.from('users').select('full_name, email').eq('id', nda.user_id).single()
+          if (buyer) { buyer_name = buyer.full_name || buyer.email; buyer_email = buyer.email }
         }
-
-        return {
-          ...room,
-          buyer_name,
-          buyer_email,
+        return { ...room, buyer_name, buyer_email,
           messages: (room.messages || []).sort((a: Message, b: Message) =>
-            new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()
-          )
-        }
+            new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()) }
       }))
       setDealRooms(enriched)
-    } else {
-      setDealRooms([])
-    }
+    } else setDealRooms([])
 
     setLoading(false)
   }
@@ -142,16 +93,10 @@ export default function SellerPortal() {
     const body = replyText[dealRoomId]?.trim()
     if (!body || !profile) return
     setSending(dealRoomId)
-
     await supabase.from('messages').insert({
-      deal_room_id: dealRoomId,
-      sender_id: profile.id,
-      sender_name: profile.full_name || 'Seller',
-      sender_role: 'seller',
-      body,
-      read: false,
+      deal_room_id: dealRoomId, sender_id: profile.id,
+      sender_name: profile.full_name || 'Seller', sender_role: 'seller', body, read: false,
     })
-
     setReplyText(prev => ({ ...prev, [dealRoomId]: '' }))
     await loadListingsAndRooms(profile.id)
     setSending(null)
@@ -163,10 +108,8 @@ export default function SellerPortal() {
   }
 
   const statusColor = (s: string) => ({
-    pending: 'bg-yellow-900 text-yellow-300',
-    approved: 'bg-green-900 text-green-300',
-    rejected: 'bg-red-900 text-red-300',
-    active: 'bg-blue-900 text-blue-300',
+    pending: 'bg-yellow-900 text-yellow-300', approved: 'bg-green-900 text-green-300',
+    rejected: 'bg-red-900 text-red-300', active: 'bg-blue-900 text-blue-300',
   }[s] || 'bg-gray-800 text-gray-400')
 
   if (loading) return (
@@ -193,20 +136,14 @@ export default function SellerPortal() {
 
         <div className="max-w-4xl mx-auto px-6 py-8">
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold">
-              Welcome back{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''}
-            </h1>
-            <p className="text-gray-400 text-sm mt-1">
-              {listings.length} listing{listings.length !== 1 ? 's' : ''} · {dealRooms.length} buyer inquiry{dealRooms.length !== 1 ? 's' : ''}
-            </p>
+            <h1 className="text-2xl font-semibold">Welcome back{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''}</h1>
+            <p className="text-gray-400 text-sm mt-1">{listings.length} listing{listings.length !== 1 ? 's' : ''} · {dealRooms.length} buyer inquiry{dealRooms.length !== 1 ? 's' : ''}</p>
           </div>
 
           <div className="flex gap-1 mb-6 bg-gray-900 rounded-lg p-1 w-fit">
             {(['listings', 'buyers'] as const).map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === tab ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
-                }`}>
+                className={`px-5 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === tab ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}>
                 {tab === 'buyers' ? `Buyer Inquiries (${dealRooms.length})` : `My Listings (${listings.length})`}
               </button>
             ))}
@@ -250,10 +187,7 @@ export default function SellerPortal() {
               ) : dealRooms.map(room => (
                 <div key={room.id} className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{room.buyer_name}</p>
-                      <p className="text-sm text-gray-400">{room.buyer_email}</p>
-                    </div>
+                    <div><p className="font-medium">{room.buyer_name}</p><p className="text-sm text-gray-400">{room.buyer_email}</p></div>
                     <div className="text-right">
                       <span className={`text-xs px-2 py-1 rounded-full capitalize ${statusColor(room.status)}`}>{room.status}</span>
                       <p className="text-xs text-gray-600 mt-1">{room.messages.length} messages</p>
@@ -263,9 +197,7 @@ export default function SellerPortal() {
                     {room.messages.length === 0 && <p className="text-gray-600 text-sm text-center py-4">No messages yet</p>}
                     {room.messages.map((msg: Message) => (
                       <div key={msg.id} className={`flex ${msg.sender_role === 'seller' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-sm px-4 py-3 rounded-2xl text-sm ${
-                          msg.sender_role === 'seller' ? 'bg-green-700 text-white rounded-br-sm' : 'bg-gray-800 text-gray-200 rounded-bl-sm'
-                        }`}>
+                        <div className={`max-w-sm px-4 py-3 rounded-2xl text-sm ${msg.sender_role === 'seller' ? 'bg-green-700 text-white rounded-br-sm' : 'bg-gray-800 text-gray-200 rounded-bl-sm'}`}>
                           <p className="text-xs opacity-60 mb-1">{msg.sender_name} · {new Date(msg.sent_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</p>
                           <p>{msg.body}</p>
                         </div>
