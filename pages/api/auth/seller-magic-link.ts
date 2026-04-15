@@ -15,11 +15,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { email } = req.body
   if (!email) return res.status(400).json({ error: 'Email required' })
 
+  const isProd = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production'
+  const siteUrl = isProd ? 'https://atmexits.vercel.app' : 'http://localhost:3000'
+
   const { data, error } = await supabase.auth.admin.generateLink({
     type: 'magiclink',
     email: email.toLowerCase().trim(),
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/seller-portal`,
+      redirectTo: `${siteUrl}/seller-portal`,
     },
   })
 
