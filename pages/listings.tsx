@@ -40,7 +40,7 @@ export default function Listings() {
     <>
       <Head>
         <title>ATM Routes for Sale | ATM Exits</title>
-        <meta name="description" content="Browse verified ATM routes for sale. Every listing reviewed by ATM Brokerage." />
+        <meta name="description" content="Browse verified ATM routes for sale. Every listing reviewed by our team." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div style={{ fontFamily: 'system-ui, sans-serif', minHeight: '100vh', background: '#f9fafb' }}>
@@ -106,7 +106,7 @@ export default function Listings() {
         </div>
 
         <footer style={{ borderTop: '1px solid #e5e7eb', padding: '24px 16px', textAlign: 'center', fontSize: '13px', color: '#9ca3af' }}>
-          © 2026 ATM Exits · Built by ATM Brokerage
+          © 2026 ATM Exits
         </footer>
       </div>
     </>
