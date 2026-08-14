@@ -7,7 +7,7 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>ATM Exits — The Trusted Marketplace for ATM Routes</title>
-        <meta name="description" content="Buy and sell verified ATM routes. Built by ATM Brokerage — 200+ closed transactions, $100M+ in deal volume since 2013." />
+        <meta name="description" content="Buy and sell verified ATM routes. 200+ closed transactions, $100M+ in deal volume since 2013." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
@@ -29,7 +29,7 @@ const Home: NextPage = () => {
         {/* Hero */}
         <section style={{ maxWidth: '720px', margin: '0 auto', padding: '64px 20px 56px', textAlign: 'center' }}>
           <div style={{ display: 'inline-block', background: '#f0fdf4', color: '#2d6a4f', fontSize: '12px', fontWeight: 600, padding: '4px 14px', borderRadius: '20px', marginBottom: '20px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            By ATM Brokerage · 200+ closed transactions
+            200+ closed transactions · $100M+ in deal volume
           </div>
           <h1 style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-1.5px', margin: '0 0 20px' }}>
             The only trusted marketplace for verified ATM routes
@@ -96,7 +96,7 @@ const Home: NextPage = () => {
 
         {/* Footer */}
         <footer style={{ padding: '28px 20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', color: '#9ca3af', flexWrap: 'wrap', gap: '12px' }}>
-          <div>© 2026 ATM Exits · Built by ATM Brokerage</div>
+          <div>© 2026 ATM Exits</div>
           <div style={{ display: 'flex', gap: '20px' }}>
             <Link href="/privacy" style={{ color: '#9ca3af', textDecoration: 'none' }}>Privacy</Link>
             <Link href="/terms" style={{ color: '#9ca3af', textDecoration: 'none' }}>Terms</Link>
