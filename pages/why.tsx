@@ -35,9 +35,9 @@ export default function Why() {
           <div className="max-w-4xl mx-auto">
             <div className="p-6 bg-white border-2 border-blue-400 rounded-lg">
               <p className="text-gray-800 text-lg">
-                <strong>Who built this?</strong> We run ATM Brokerage — achieved 90% market share and facilitated 
-                $75-100M in transactions over 10+ years by becoming the trusted specialist in a fragmented vertical. 
-                We're applying the same playbook to cleaning businesses.
+                <strong>Who built this?</strong> Our team has spent 10+ years as specialist brokers in this 
+                vertical — 90% market share and $75-100M in transactions closed by becoming the trusted operator 
+                in a fragmented market. ATM Exits is that playbook, opened up.
               </p>
             </div>
           </div>
@@ -566,8 +566,8 @@ export default function Why() {
                 
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                   <p className="text-gray-700">
-                    <strong>We built this because we're brokers too.</strong> We ran ATM Brokerage for 10+ years and 
-                    facilitated $75-100M in transactions by becoming the trusted specialist. We know what legitimate 
+                    <strong>We built this because we're brokers too.</strong> We've spent 10+ years in this vertical 
+                    and facilitated $75-100M in transactions by becoming the trusted specialist. We know what legitimate 
                     brokers need: quality buyers, clean data, and aligned incentives.
                   </p>
                 </div>
