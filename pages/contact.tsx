@@ -33,14 +33,14 @@ export default function Contact() {
               <Link href="/listings" style={{ color: '#2d6a4f', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>Browse ATM routes &rarr;</Link>
             </div>
             <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>ATM Brokerage</div>
-              <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 4px', lineHeight: 1.6 }}>ATM Exits is built by ATM Brokerage — the national leader in ATM route transactions since 2013.</p>
-              <a href="https://atmbrokerage.com" target="_blank" rel="noopener noreferrer" style={{ color: '#2d6a4f', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>atmbrokerage.com &rarr;</a>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>About</div>
+              <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 12px', lineHeight: 1.6 }}>ATM Exits is the national marketplace for verified ATM route transactions &mdash; 200+ closed deals since 2013.</p>
+              <Link href="/why" style={{ color: '#2d6a4f', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>Why ATM Exits &rarr;</Link>
             </div>
           </div>
         </div>
         <footer style={{ borderTop: '1px solid #e5e7eb', padding: '24px 16px', textAlign: 'center', fontSize: '13px', color: '#9ca3af' }}>
-          &copy; 2026 ATM Exits &middot; Built by ATM Brokerage
+          &copy; 2026 ATM Exits
         </footer>
       </div>
     </>
