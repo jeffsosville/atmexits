@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Notify admin
   await sendEmail({
-    to: 'jeff@atmbrokerage.com',
+    to: 'info@atmexits.com',
     subject: 'New ATM route submission — ' + (data.machine_count || '?') + ' machines',
     html: '<h2>New listing submission</h2>' +
       '<p><strong>Seller:</strong> ' + data.seller_name + ' (' + data.seller_email + ')</p>' +
