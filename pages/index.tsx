@@ -7,7 +7,7 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>ATM Exits — The Trusted Marketplace for ATM Routes</title>
-        <meta name="description" content="Buy and sell verified ATM routes. 200+ closed transactions, $100M+ in deal volume since 2013." />
+        <meta name="description" content="Small and mid-size ATM routes for sale. Every listing reviewed, direct to the seller, no buyer fee." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
@@ -29,7 +29,7 @@ const Home: NextPage = () => {
         {/* Hero */}
         <section style={{ maxWidth: '720px', margin: '0 auto', padding: '64px 20px 56px', textAlign: 'center' }}>
           <div style={{ display: 'inline-block', background: '#f0fdf4', color: '#2d6a4f', fontSize: '12px', fontWeight: 600, padding: '4px 14px', borderRadius: '20px', marginBottom: '20px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            200+ closed transactions · $100M+ in deal volume
+            Small and mid-size routes · Direct to the seller
           </div>
           <h1 style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-1.5px', margin: '0 0 20px' }}>
             The only trusted marketplace for verified ATM routes
@@ -51,9 +51,9 @@ const Home: NextPage = () => {
         <section style={{ background: '#f9fafb', borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', padding: '28px 20px' }}>
           <div style={{ maxWidth: '700px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', textAlign: 'center' }}>
             {[
-              { stat: '200+', label: 'Closed transactions' },
-              { stat: '$100M+', label: 'Deal volume since 2013' },
-              { stat: '100%', label: 'Listings reviewed' },
+              { stat: 'Direct', label: 'Straight to the seller' },
+              { stat: 'Reviewed', label: 'Every listing checked before it posts' },
+              { stat: 'No fee', label: 'Buyers pay nothing' },
             ].map(({ stat, label }) => (
               <div key={label}>
                 <div style={{ fontSize: 'clamp(22px, 5vw, 30px)', fontWeight: 800, color: '#2d6a4f' }}>{stat}</div>
@@ -87,7 +87,7 @@ const Home: NextPage = () => {
             Know what your route is worth
           </h2>
           <p style={{ fontSize: '16px', opacity: 0.85, margin: '0 0 28px' }}>
-            Free valuation from the team behind 200+ closed ATM route transactions.
+            Free valuation on your route. No obligation, no marketplace gate.
           </p>
           <Link href="/sell" style={{ background: '#fff', color: '#2d6a4f', padding: '13px 32px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '15px' }}>
             Get your free valuation →
