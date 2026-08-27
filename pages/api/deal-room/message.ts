@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (sender_role !== 'seller') {
     // Buyer sent a message → notify admin
     await sendEmail({
-      to: 'jeff@atmbrokerage.com',
+      to: 'info@atmexits.com',
       subject: 'New buyer message — ' + (listing?.teaser_location_state || '') + ' ATM route',
       html: '<h2>New message from buyer</h2>' +
         '<p><strong>From:</strong> ' + (sender_name || 'Buyer') + (sender_email ? ' (' + sender_email + ')' : '') + '</p>' +
