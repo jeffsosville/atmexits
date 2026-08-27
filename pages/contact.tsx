@@ -34,7 +34,7 @@ export default function Contact() {
             </div>
             <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>About</div>
-              <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 12px', lineHeight: 1.6 }}>ATM Exits is the national marketplace for verified ATM route transactions &mdash; 200+ closed deals since 2013.</p>
+              <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 12px', lineHeight: 1.6 }}>ATM Exits is a marketplace for small and mid-size ATM routes &mdash; the ones most brokers won&rsquo;t take. Every listing is reviewed before it posts.</p>
               <Link href="/why" style={{ color: '#2d6a4f', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>Why ATM Exits &rarr;</Link>
             </div>
           </div>
