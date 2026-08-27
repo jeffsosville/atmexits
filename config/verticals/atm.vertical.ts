@@ -10,7 +10,7 @@ export const atmVertical = {
   },
   seo: {
     metaTitle: 'ATM Routes for Sale | ATM Exits',
-    metaDescription: 'Buy and sell verified ATM routes. 200+ closed deals since 2013.',
+    metaDescription: 'Small and mid-size ATM routes for sale. Verified listings, direct to the seller.',
     keywords: ['ATM route for sale', 'buy ATM route', 'sell ATM business'],
     ogImage: '/images/og-atmexits.png',
     twitterCard: 'summary_large_image' as const,
