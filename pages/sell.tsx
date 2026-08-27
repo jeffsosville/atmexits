@@ -264,7 +264,6 @@ export default function Sell() {
                   <label style={labelStyle}>Wireless carrier / provider <span style={{ fontWeight: 400, color: '#9ca3af' }}>(optional)</span></label>
                   <select style={inputStyle} value={form.wireless_carrier} onChange={e => set('wireless_carrier', e.target.value)}>
                     <option value="">Select one...</option>
-                    <option value="ConnectATM">ConnectATM</option>
                     <option value="Verizon">Verizon</option>
                     <option value="AT&T">AT&T</option>
                     <option value="T-Mobile">T-Mobile</option>
