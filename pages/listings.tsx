@@ -100,7 +100,7 @@ export default function Listings() {
 
           <div style={{ marginTop: '40px', background: '#2d6a4f', borderRadius: '12px', padding: '28px 20px', textAlign: 'center', color: '#fff' }}>
             <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 8px' }}>Selling your ATM route?</h3>
-            <p style={{ opacity: 0.85, margin: '0 0 18px', fontSize: '14px' }}>Free valuation from the team behind 200+ closed ATM route transactions.</p>
+            <p style={{ opacity: 0.85, margin: '0 0 18px', fontSize: '14px' }}>Free valuation on your route. No obligation, no marketplace gate.</p>
             <Link href="/sell" style={{ background: '#fff', color: '#2d6a4f', padding: '10px 24px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '14px' }}>Get your free valuation →</Link>
           </div>
         </div>
