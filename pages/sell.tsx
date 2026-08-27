@@ -99,13 +99,22 @@ export default function Sell() {
     setLoading(true)
 
     try {
-      // Save contact to users table first (upsert by email via service role would be ideal,
-      // but for now we save directly to listings_pending with seller metadata in notes)
-      const { error: insertError } = await supabase
-        .from('listings_pending')
-        .insert({
-          seller_id: (await supabase.auth.getSession()).data.session?.user?.id || null,
-          status: 'submitted',
+      // Post to the API route rather than writing to Supabase from the browser.
+      //
+      // This used to insert directly from the client, which worked - rows saved
+      // fine - but meant /api/submit-listing was never called, so the admin
+      // notification never fired for ANY submission. Two real seller leads sat
+      // unnoticed for weeks because of it.
+      //
+      // The route does the insert and the notification together, so a listing
+      // can't be recorded without someone being told about it.
+      const res = await fetch('/api/submit-listing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          seller_name: form.full_name,
+          seller_email: form.email,
+          seller_phone: form.phone,
           machine_count: parseInt(form.machine_count) || null,
           location_types: form.location_types || null,
           ownership_type: form.ownership_type || null,
@@ -114,18 +123,27 @@ export default function Sell() {
           processor: form.processor || null,
           wireless_carrier: form.wireless_carrier || null,
           asking_price: parseFloat(form.asking_price) || null,
-          notes: `SELLER: ${form.full_name} | ${form.email} | ${form.phone}\n\n${form.notes}`,
+          notes: form.notes || '',
         })
+      })
 
-      if (insertError) throw insertError
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.error || 'Could not submit your listing. Please try again.')
+      }
 
-      // Send magic link so seller can access their portal
+      // Magic link so the seller can track it in their portal. Best effort -
+      // a mail problem here must not look like a failed submission.
       if (form.email) {
-        await fetch('/api/auth/seller-magic-link', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: form.email })
-        })
+        try {
+          await fetch('/api/auth/seller-magic-link', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: form.email })
+          })
+        } catch (mailErr) {
+          console.error('magic link failed (listing was saved):', mailErr)
+        }
       }
       setSubmitted(true)
     } catch (e: any) {
