@@ -173,7 +173,7 @@ export default function DealRoomPage({ dealRoom, listing, messages: init_msgs, o
         </div>
 
         <footer style={{ borderTop: '1px solid #e5e7eb', padding: '20px 16px', textAlign: 'center', fontSize: '13px', color: '#9ca3af' }}>
-          &copy; 2026 ATM Exits &middot; Built by ATM Brokerage
+          &copy; 2026 ATM Exits
         </footer>
       </div>
     </>
