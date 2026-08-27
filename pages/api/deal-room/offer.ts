@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { data: listing } = room ? await supabase.from('listings_live').select('teaser_location_state,teaser_machine_count,asking_price').eq('id', room.listing_id).single() : { data: null }
 
   await sendEmail({
-    to: 'jeff@atmbrokerage.com',
+    to: 'info@atmexits.com',
     subject: 'New offer $' + amount.toLocaleString() + ' — ' + (listing?.teaser_location_state || '') + ' ATM route',
     html: '<h2>New offer submitted</h2>' +
       '<p><strong>Amount:</strong> $' + Number(amount).toLocaleString() + '</p>' +
