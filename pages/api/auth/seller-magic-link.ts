@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           This link can only be used once.
         </p>
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
-        <p style="color: #9ca3af; font-size: 12px;">ATM Exits · atmexits.vercel.app</p>
+        <p style="color: #9ca3af; font-size: 12px;">ATM Exits · atmexits.com</p>
       </div>
     `,
   })

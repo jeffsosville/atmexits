@@ -26,14 +26,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Notify admin
   await sendEmail({
-    to: 'info@atmexits.com',
+    to: 'hello@atmexits.com',
     subject: 'New ATM route submission — ' + (data.machine_count || '?') + ' machines',
     html: '<h2>New listing submission</h2>' +
       '<p><strong>Seller:</strong> ' + data.seller_name + ' (' + data.seller_email + ')</p>' +
       '<p><strong>Machines:</strong> ' + (data.machine_count || '—') + '</p>' +
       '<p><strong>Gross monthly:</strong> $' + (data.gross_monthly_surcharge || '—') + '</p>' +
       '<p><strong>Asking price:</strong> $' + (data.asking_price || '—') + '</p>' +
-      '<p><a href="https://atmexits.vercel.app/admin">Review in admin →</a></p>'
+      '<p><a href="https://atmexits.com/admin">Review in admin →</a></p>'
   })
 
   return res.status(200).json({ ok: true })
