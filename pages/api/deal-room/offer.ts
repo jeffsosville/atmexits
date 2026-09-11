@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { data: listing } = room ? await supabase.from('listings_live').select('teaser_location_state,teaser_machine_count,asking_price').eq('id', room.listing_id).single() : { data: null }
 
   await sendEmail({
-    to: 'info@atmexits.com',
+    to: 'hello@atmexits.com',
     subject: 'New offer $' + amount.toLocaleString() + ' — ' + (listing?.teaser_location_state || '') + ' ATM route',
     html: '<h2>New offer submitted</h2>' +
       '<p><strong>Amount:</strong> $' + Number(amount).toLocaleString() + '</p>' +
@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       (listing?.asking_price ? '<p><strong>Asking price:</strong> $' + Number(listing.asking_price).toLocaleString() + '</p>' : '') +
       (terms_notes ? '<p><strong>Terms:</strong> ' + terms_notes + '</p>' : '') +
       '<p><strong>Buyer:</strong> ' + (buyer_email || 'unknown') + '</p>' +
-      '<p><a href="https://atmexits.vercel.app/admin-deals">View in admin →</a></p>'
+      '<p><a href="https://atmexits.com/admin-deals">View in admin →</a></p>'
   })
 
   return res.status(200).json({ ok: true })

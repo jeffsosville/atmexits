@@ -88,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const greeting   = first_name ? `Hi ${first_name},` : "Hi there,";
 
     await resend.emails.send({
-      from:    "Cleaning Exits <hello@cleaningexits.com>",
+      from:    "ATM Exits <hello@atmexits.com>",
       to:      email,
       subject: "Confirm your subscription to Cleaning Exits",
       html: `
