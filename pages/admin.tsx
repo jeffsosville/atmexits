@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import Head from 'next/head'
-import { supabase } from '../lib/supabaseClient'
 
 type Listing = {
   id: string
@@ -44,12 +43,10 @@ export default function Admin() {
 
   async function fetchListings() {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('listings_pending')
-      .select('*')
-      .eq('status', filter)
-      .order('submitted_at', { ascending: false })
-    if (!error && data) setListings(data)
+    const res = await fetch('/api/admin/listings?status=' + encodeURIComponent(filter))
+    if (res.status === 401) { window.location.href = '/admin-login'; return }
+    const json = await res.json().catch(() => ({}))
+    if (res.ok && json.listings) setListings(json.listings)
     setLoading(false)
   }
 
@@ -61,15 +58,10 @@ export default function Admin() {
 
   async function updateStatus(id: string, newStatus: string) {
     setSaving(true)
-    await supabase
-      .from('listings_pending')
-      .update({
-        status: newStatus,
-        admin_notes: adminNotes,
-        quality_score: qualityScore ? parseInt(qualityScore) : null,
-        reviewed_at: new Date().toISOString(),
-      })
-      .eq('id', id)
+    await fetch('/api/admin/listings', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: newStatus, admin_notes: adminNotes, quality_score: qualityScore }),
+    })
     setSaving(false)
     setSelected(null)
     fetchListings()
