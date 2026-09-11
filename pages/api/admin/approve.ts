@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { isAdminRequest } from '../../../lib/adminAuth'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
-  if (req.cookies.admin_auth !== '1') return res.status(401).json({ error: 'Unauthorized' })
+  if (!isAdminRequest(req)) return res.status(401).json({ error: 'Unauthorized' })
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   const { id, slug, teaser_machine_count, teaser_revenue_range, teaser_location_state, teaser_summary, asking_price, quality_score, full_data } = req.body
   const { error } = await supabase.from('listings_live').insert({
