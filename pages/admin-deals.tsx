@@ -8,8 +8,9 @@ type Deal = {
   listing_id: string
   created_at: string
   listing: { slug: string; teaser_location_state: string | null; teaser_machine_count: number | null; asking_price: number | null }
-  messages: { id: string; body: string; sent_at: string; sender_name: string; sender_role: string }[]
-  offers: { id: string; amount: number; status: string; terms_notes: string | null; submitted_at: string }[]
+  messages: { id: string; body: string; sent_at: string; sender_name: string; sender_role: string; buyer_email: string | null }[]
+  offers: { id: string; amount: number; status: string; terms_notes: string | null; submitted_at: string; buyer_email: string | null }[]
+  buyers: { email: string; name: string | null; nda_signed_at: string | null }[]
 }
 
 const fmt = (n: number) => '$' + n.toLocaleString()
@@ -20,6 +21,8 @@ export default function AdminDeals() {
   const [selected, setSelected] = useState<Deal | null>(null)
   const [reply, setReply] = useState('')
   const [sending, setSending] = useState(false)
+  const [buyer, setBuyer] = useState<string | null>(null)
+  const [replyError, setReplyError] = useState('')
 
   useEffect(() => { fetchDeals() }, [])
 
@@ -30,17 +33,20 @@ export default function AdminDeals() {
     const json = await res.json().catch(() => ({}))
     const enriched: Deal[] = json.deals || []
     setDeals(enriched)
-    if (enriched.length > 0 && !selected) setSelected(enriched[0])
+    setSelected(prev => (prev && enriched.find(d => d.id === prev.id)) || enriched[0] || null)
     setLoading(false)
   }
 
   async function sendReply() {
     if (!reply.trim() || !selected) return
     setSending(true)
-    await fetch('/api/deal-room/message', {
+    if (!buyer) { setReplyError('Pick a buyer first'); setSending(false); return }
+    setReplyError('')
+    const res = await fetch('/api/deal-room/message', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deal_room_id: selected.id, body: reply, sender_name: 'ATM Exits', sender_role: 'seller' }),
+      body: JSON.stringify({ deal_room_id: selected.id, body: reply, sender_role: 'seller', buyer_email: buyer }),
     })
+    if (!res.ok) { const j = await res.json().catch(() => ({})); setReplyError(j.error || 'Reply failed'); setSending(false); return }
     setReply('')
     await fetchDeals()
     setSending(false)
@@ -83,7 +89,7 @@ export default function AdminDeals() {
             {loading ? (
               <div style={{ padding: '24px', color: '#9ca3af', fontSize: '14px' }}>Loading...</div>
             ) : deals.map(deal => (
-              <div key={deal.id} onClick={() => setSelected(deal)}
+              <div key={deal.id} onClick={() => { setSelected(deal); setBuyer(null); setReply(''); setReplyError('') }}
                 style={{ padding: '16px', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', background: selected?.id === deal.id ? '#f0fdf4' : 'transparent' }}>
                 <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '2px' }}>
                   {deal.listing?.teaser_location_state || 'Unknown'} — {deal.listing?.teaser_machine_count || '?'} machines
@@ -125,62 +131,95 @@ export default function AdminDeals() {
                   </select>
                 </div>
 
-                {/* Offers */}
-                {selected.offers.length > 0 && (
-                  <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>Offers</div>
-                    {selected.offers.map(o => (
-                      <div key={o.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#f9fafb', borderRadius: '8px', marginBottom: '8px' }}>
-                        <div>
-                          <div style={{ fontWeight: 700, fontSize: '20px', color: '#2d6a4f' }}>{fmt(o.amount)}</div>
-                          {o.terms_notes && <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px' }}>{o.terms_notes}</div>}
-                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>{new Date(o.submitted_at).toLocaleString()}</div>
+                {/* Buyers */}
+                {(() => {
+                  const threadMsgs = selected.messages.filter(m => (m.buyer_email || '') === (buyer || ''))
+                  const threadOffers = selected.offers.filter(o => (o.buyer_email || '') === (buyer || ''))
+                  const unassigned = selected.messages.filter(m => !m.buyer_email).length + selected.offers.filter(o => !o.buyer_email).length
+                  const current = selected.buyers.find(b => b.email === buyer)
+                  return (
+                    <>
+                      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '16px 20px', marginBottom: '16px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>
+                          Buyers ({selected.buyers.length}) · each buyer only sees their own thread
                         </div>
-                        <span style={{ background: '#f0fdf4', color: '#2d6a4f', padding: '4px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: 600 }}>{o.status}</span>
+                        {selected.buyers.length === 0 && <p style={{ color: '#9ca3af', fontSize: '14px', margin: 0 }}>No buyers have signed the NDA yet.</p>}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                          {selected.buyers.map(b => {
+                            const n = selected.messages.filter(m => m.buyer_email === b.email).length
+                            const o = selected.offers.filter(x => x.buyer_email === b.email).length
+                            const waiting = (() => { const ms = selected.messages.filter(m => m.buyer_email === b.email); return ms.length > 0 && ms[ms.length - 1].sender_role !== 'seller' })()
+                            const active = buyer === b.email
+                            return (
+                              <button key={b.email} onClick={() => { setBuyer(b.email); setReplyError('') }}
+                                style={{ textAlign: 'left', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', border: active ? '2px solid #2d6a4f' : '1px solid #e5e7eb', background: active ? '#f0fdf4' : '#fff' }}>
+                                <div style={{ fontSize: '13px', fontWeight: 600 }}>{b.name || b.email}{waiting && <span style={{ marginLeft: '6px', color: '#dc2626' }}>● needs reply</span>}</div>
+                                <div style={{ fontSize: '12px', color: '#6b7280' }}>{b.name ? b.email + ' · ' : ''}{n} msg{n !== 1 ? 's' : ''}{o ? ' · ' + o + ' offer' + (o !== 1 ? 's' : '') : ''}</div>
+                              </button>
+                            )
+                          })}
+                        </div>
+                        {unassigned > 0 && <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '10px' }}>{unassigned} older item(s) not linked to a buyer are hidden.</div>}
                       </div>
-                    ))}
-                  </div>
-                )}
 
-                {/* Messages */}
-                <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', marginBottom: '16px' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Messages</div>
-                  {selected.messages.length === 0 ? (
-                    <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 16px' }}>No messages yet.</p>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-                      {selected.messages.map(m => {
-                        const isSeller = m.sender_role === 'seller'
-                        return (
-                          <div key={m.id} style={{ padding: '12px 16px', background: isSeller ? '#f0fdf4' : '#f9fafb', borderRadius: '8px', border: isSeller ? '1px solid #bbf7d0' : '1px solid #f3f4f6' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                <span style={{ fontSize: '13px', fontWeight: 600 }}>{m.sender_name || (isSeller ? 'ATM Exits' : 'Buyer')}</span>
-                                <span style={{ fontSize: '11px', fontWeight: 600, padding: '1px 8px', borderRadius: '20px', background: isSeller ? '#2d6a4f' : '#e5e7eb', color: isSeller ? '#fff' : '#6b7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                  {isSeller ? 'Seller' : 'Buyer'}
-                                </span>
-                              </div>
-                              <span style={{ fontSize: '12px', color: '#9ca3af' }}>{new Date(m.sent_at).toLocaleString()}</span>
+                      {!buyer ? (
+                        <div style={{ color: '#9ca3af', textAlign: 'center', padding: '40px 0', fontSize: '14px' }}>Select a buyer to see their messages and offers</div>
+                      ) : (
+                        <>
+                          {threadOffers.length > 0 && (
+                            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
+                              <div style={{ fontSize: '12px', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>Offers from {current?.name || buyer}</div>
+                              {threadOffers.map(o => (
+                                <div key={o.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#f9fafb', borderRadius: '8px', marginBottom: '8px' }}>
+                                  <div>
+                                    <div style={{ fontWeight: 700, fontSize: '20px', color: '#2d6a4f' }}>{fmt(o.amount)}</div>
+                                    {o.terms_notes && <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px' }}>{o.terms_notes}</div>}
+                                    <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>{new Date(o.submitted_at).toLocaleString()}</div>
+                                  </div>
+                                  <span style={{ background: '#f0fdf4', color: '#2d6a4f', padding: '4px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: 600 }}>{o.status}</span>
+                                </div>
+                              ))}
                             </div>
-                            <p style={{ fontSize: '14px', color: '#374151', margin: 0, lineHeight: 1.5 }}>{m.body}</p>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )}
+                          )}
 
-                  {/* Reply as seller */}
-                  <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '16px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#2d6a4f', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reply as Seller</div>
-                    <textarea value={reply} onChange={e => setReply(e.target.value)}
-                      placeholder="Type your reply to the buyer..."
-                      style={{ width: '100%', minHeight: '80px', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: '10px' }} />
-                    <button onClick={sendReply} disabled={sending || !reply.trim()}
-                      style={{ background: sending || !reply.trim() ? '#9ca3af' : '#2d6a4f', color: '#fff', border: 'none', padding: '10px 22px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
-                      {sending ? 'Sending...' : 'Send reply as Seller'}
-                    </button>
-                  </div>
-                </div>
+                          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', marginBottom: '16px' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Conversation with {current?.name || buyer}</div>
+                            {threadMsgs.length === 0 ? (
+                              <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 16px' }}>No messages yet.</p>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+                                {threadMsgs.map(m => {
+                                  const isSeller = m.sender_role === 'seller'
+                                  return (
+                                    <div key={m.id} style={{ padding: '12px 16px', background: isSeller ? '#f0fdf4' : '#f9fafb', borderRadius: '8px', border: isSeller ? '1px solid #bbf7d0' : '1px solid #f3f4f6' }}>
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                        <span style={{ fontSize: '13px', fontWeight: 600 }}>{m.sender_name || (isSeller ? 'ATM Exits' : 'Buyer')}</span>
+                                        <span style={{ fontSize: '12px', color: '#9ca3af' }}>{new Date(m.sent_at).toLocaleString()}</span>
+                                      </div>
+                                      <p style={{ fontSize: '14px', color: '#374151', margin: 0, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{m.body}</p>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+
+                            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '16px' }}>
+                              <div style={{ fontSize: '12px', fontWeight: 600, color: '#2d6a4f', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reply to {current?.name || buyer} (emails {buyer})</div>
+                              <textarea value={reply} onChange={e => setReply(e.target.value)}
+                                placeholder="Type your reply..."
+                                style={{ width: '100%', minHeight: '80px', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: '10px' }} />
+                              {replyError && <div style={{ color: '#dc2626', fontSize: '13px', marginBottom: '8px' }}>{replyError}</div>}
+                              <button onClick={sendReply} disabled={sending || !reply.trim()}
+                                style={{ background: sending || !reply.trim() ? '#9ca3af' : '#2d6a4f', color: '#fff', border: 'none', padding: '10px 22px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+                                {sending ? 'Sending...' : 'Send reply'}
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )
+                })()}
 
               </div>
             )}
