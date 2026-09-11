@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { supabase } from '../lib/supabaseClient'
 
 type Deal = {
   id: string
@@ -26,16 +25,10 @@ export default function AdminDeals() {
 
   async function fetchDeals() {
     setLoading(true)
-    const { data: rooms } = await supabase.from('deal_rooms').select('*').order('created_at', { ascending: false })
-    if (!rooms) { setLoading(false); return }
-
-    const enriched = await Promise.all(rooms.map(async (room: any) => {
-      const { data: listing } = await supabase.from('listings_live').select('slug,teaser_location_state,teaser_machine_count,asking_price').eq('id', room.listing_id).single()
-      const { data: messages } = await supabase.from('messages').select('*').eq('deal_room_id', room.id).order('sent_at')
-      const { data: offers } = await supabase.from('offers').select('*').eq('deal_room_id', room.id).order('submitted_at')
-      return { ...room, listing: listing || {}, messages: messages || [], offers: offers || [] }
-    }))
-
+    const res = await fetch('/api/admin/deals')
+    if (res.status === 401) { window.location.href = '/admin-login'; return }
+    const json = await res.json().catch(() => ({}))
+    const enriched: Deal[] = json.deals || []
     setDeals(enriched)
     if (enriched.length > 0 && !selected) setSelected(enriched[0])
     setLoading(false)
@@ -54,7 +47,10 @@ export default function AdminDeals() {
   }
 
   async function updateDealStatus(id: string, status: string) {
-    await supabase.from('deal_rooms').update({ status }).eq('id', id)
+    await fetch('/api/admin/deals', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status }),
+    })
     fetchDeals()
   }
 

@@ -23,13 +23,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (sender_role !== 'seller') {
     // Buyer sent a message → notify admin
     await sendEmail({
-      to: 'info@atmexits.com',
+      to: 'hello@atmexits.com',
       subject: 'New buyer message — ' + (listing?.teaser_location_state || '') + ' ATM route',
       html: '<h2>New message from buyer</h2>' +
         '<p><strong>From:</strong> ' + (sender_name || 'Buyer') + (sender_email ? ' (' + sender_email + ')' : '') + '</p>' +
         '<p><strong>Route:</strong> ' + routeLabel + '</p>' +
         '<p><strong>Message:</strong> ' + body + '</p>' +
-        '<p><a href="https://atmexits.vercel.app/admin-deals">Reply in admin →</a></p>'
+        '<p><a href="https://atmexits.com/admin-deals">Reply in admin →</a></p>'
     })
   } else {
     // Seller (admin) replied → notify the buyer.
@@ -53,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         html: '<h2>You have a new reply</h2>' +
           '<p>The team at ATM Exits replied to your question about the <strong>' + routeLabel + '</strong> route.</p>' +
           '<p style="padding:12px 16px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;">' + body + '</p>' +
-          '<p><a href="https://atmexits.vercel.app/deal-room/' + deal_room_id + '">View in your deal room →</a></p>'
+          '<p><a href="https://atmexits.com/deal-room/' + deal_room_id + '">View in your deal room →</a></p>'
       })
     }
   }
