@@ -3,6 +3,7 @@ import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
+import { buyerFromCookies, hasSignedNda } from '../../lib/buyer'
 
 const fmt = (n: number) => '$' + n.toLocaleString()
 const inp: any = { width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
@@ -23,10 +24,10 @@ export default function DealRoomPage({ dealRoom, listing, messages: init_msgs, o
     setSending(true)
     const res = await fetch('/api/deal-room/message', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deal_room_id: dealRoom.id, body: msgBody, sender_name: buyerName, sender_email: buyerEmail }),
+      body: JSON.stringify({ deal_room_id: dealRoom.id, body: msgBody }),
     })
     if (res.ok) {
-      setMessages((prev: any) => [...prev, { id: Date.now().toString(), body: msgBody, sent_at: new Date().toISOString(), sender_name: buyerName }])
+      setMessages((prev: any) => [...prev, { id: Date.now().toString(), body: msgBody, sent_at: new Date().toISOString(), sender_name: buyerName, sender_role: 'buyer' }])
       setMsgBody('')
     }
     setSending(false)
@@ -37,7 +38,7 @@ export default function DealRoomPage({ dealRoom, listing, messages: init_msgs, o
     setSubmittingOffer(true)
     const res = await fetch('/api/deal-room/offer', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deal_room_id: dealRoom.id, amount: parseFloat(offerAmount), terms_notes: offerTerms, buyer_email: buyerEmail }),
+      body: JSON.stringify({ deal_room_id: dealRoom.id, amount: parseFloat(offerAmount), terms_notes: offerTerms }),
     })
     if (res.ok) {
       setOffers((prev: any) => [...prev, { id: Date.now().toString(), amount: parseFloat(offerAmount), status: 'submitted', terms_notes: offerTerms, submitted_at: new Date().toISOString() }])
@@ -140,7 +141,7 @@ export default function DealRoomPage({ dealRoom, listing, messages: init_msgs, o
             <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
               <h2 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 6px' }}>Submit an offer</h2>
               <p style={{ color: '#6b7280', fontSize: '14px', margin: '0 0 20px' }}>
-                {listing.asking_price ? 'Asking price is ' + fmt(listing.asking_price) + '. ' : ''}Offers are non-binding until a Letter of Intent is signed.
+                {listing.asking_price ? 'Asking price is ' + fmt(listing.asking_price) + '. ' : ''}Offers are private — only you and ATM Exits can see them — and non-binding until a Letter of Intent is signed.
               </p>
               {offers.length > 0 && (
                 <div style={{ marginBottom: '24px' }}>
@@ -183,13 +184,18 @@ export default function DealRoomPage({ dealRoom, listing, messages: init_msgs, o
 export const getServerSideProps: GetServerSideProps = async ({ params, req }) => {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   const id = params?.id as string
-  const buyerEmail = req.cookies.buyer_email ? decodeURIComponent(req.cookies.buyer_email) : ''
-  const buyerName = req.cookies.buyer_name ? decodeURIComponent(req.cookies.buyer_name) : 'Buyer'
+  const { email: buyerEmail, name: buyerName } = buyerFromCookies(req.cookies)
   if (!buyerEmail) return { redirect: { destination: '/listings', permanent: false } }
   const { data: dealRoom } = await supabase.from('deal_rooms').select('*').eq('id', id).single()
   if (!dealRoom) return { notFound: true }
   const { data: listing } = await supabase.from('listings_live').select('*').eq('id', dealRoom.listing_id).single()
-  const { data: messages } = await supabase.from('messages').select('*').eq('deal_room_id', id).order('sent_at')
-  const { data: offers } = await supabase.from('offers').select('*').eq('deal_room_id', id).order('submitted_at')
+  if (!listing) return { notFound: true }
+  // Must have signed the NDA for this listing with this email
+  if (!(await hasSignedNda(supabase, dealRoom.listing_id, buyerEmail))) {
+    return { redirect: { destination: '/listing/' + listing.slug, permanent: false } }
+  }
+  // Private thread: only this buyer's messages and offers
+  const { data: messages } = await supabase.from('messages').select('id,body,sent_at,sender_name,sender_role').eq('deal_room_id', id).eq('buyer_email', buyerEmail).order('sent_at')
+  const { data: offers } = await supabase.from('offers').select('id,amount,status,terms_notes,submitted_at').eq('deal_room_id', id).eq('buyer_email', buyerEmail).order('submitted_at')
   return { props: { dealRoom, listing, messages: messages || [], offers: offers || [], buyerEmail, buyerName } }
 }
