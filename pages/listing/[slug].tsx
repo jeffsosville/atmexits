@@ -3,6 +3,7 @@ import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
+import { buyerFromCookies, hasSignedNda } from '../../lib/buyer'
 
 type Listing = {
   id: string; slug: string; teaser_machine_count: number | null
@@ -149,7 +150,10 @@ export const getServerSideProps: GetServerSideProps = async ({ params, req }) =>
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   const { data: listing } = await supabase.from('listings_live').select('*').eq('slug', params?.slug as string).eq('status', 'active').single()
   if (!listing) return { notFound: true }
-  const hasNda = !!req.cookies['nda_' + listing.id]
+  // Unlock only if this browser's buyer email has a signed NDA on file for this listing —
+  // the same check the deal room uses, so the "Enter deal room" button always works.
+  const { email: buyerEmail } = buyerFromCookies(req.cookies)
+  const hasNda = !!buyerEmail && (await hasSignedNda(supabase, listing.id, buyerEmail))
   let dealRoomId = null
   if (hasNda) {
     const { data: dr } = await supabase.from('deal_rooms').select('id').eq('listing_id', listing.id).single()
