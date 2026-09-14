@@ -9,7 +9,7 @@ export default function Why() {
   return (
     <>
       <Head>
-        <title>Why CleaningExits | The BizBuySell Problem</title>
+        <title>Why ATMExits</title>
         <meta name="description" content="We analyzed 1,000+ cleaning businesses on BizBuySell. Only 39% are legitimate. Here's the data that exposes a broken marketplace." />
       </Head>
 
